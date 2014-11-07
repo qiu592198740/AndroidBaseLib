@@ -29,6 +29,7 @@ public abstract class CommonRequestHelper extends BaseRequestHelper {
 	@Override
 	public void onTaskCancel(int cmdId) {
 		HttpEvent event = new HttpEvent();
+		event.setStatus(HttpEvent.STATUS_TASK_CANCEL);
 		event.setCmdId(cmdId);
 		mEventBus.postEvent(event);
 	}
@@ -36,6 +37,7 @@ public abstract class CommonRequestHelper extends BaseRequestHelper {
 	@Override
 	public <T> void onParseSuccess(int cmdId, T t) {
 		HttpEvent<T> event = new HttpEvent<T>();
+		event.setStatus(HttpEvent.STATUS_SUC);
 		event.setCmdId(cmdId);
 		event.setData(t);
 		mEventBus.postEvent(event);
@@ -44,6 +46,7 @@ public abstract class CommonRequestHelper extends BaseRequestHelper {
 	@Override
 	public void onError(int cmdId, int code, String msg) {
 		HttpEvent event = new HttpEvent();
+		event.setStatus(HttpEvent.STATUS_ERROR);
 		event.setCmdId(cmdId);
 		event.setErrorCode(code);
 		event.setErrorMsg(msg);

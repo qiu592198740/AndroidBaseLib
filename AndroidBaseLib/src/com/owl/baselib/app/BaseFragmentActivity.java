@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.IBinder;
-import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
@@ -16,6 +14,7 @@ import android.view.inputmethod.InputMethodManager;
 
 import com.lidroid.xutils.ViewUtils;
 import com.owl.baselib.R;
+import com.owl.baselib.app.event.HttpEvent;
 import com.owl.baselib.utils.DialogUtils;
 import com.owl.baselib.utils.log.LogUtils;
 /**
@@ -26,16 +25,21 @@ import com.owl.baselib.utils.log.LogUtils;
 public abstract class BaseFragmentActivity extends FragmentActivity {
 	public static final String RESUME_ACTION = "com.owl.android.baselib.action.app_resume";
 	
+	/**
+	 * 当前显示的fragment
+	 */
+	private Fragment mCurrentFragment = null;
+	
 	protected DialogUtils mDialogUtils;
-
-	public DialogUtils getDialogUtils() {
-		return mDialogUtils;
-	}
+	
+	protected EventBusWrapper mEventBus = EventBusWrapper.getInstance();
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		LogUtils.d(getClass().getSimpleName() + "---->" + "onCreate");
+		
+		mEventBus.register(this);
 		
 		//对话框工具
 		mDialogUtils = new DialogUtils(this);
@@ -89,6 +93,7 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 //		AppActivityManager.getInstance().finishActivity(this);
 		AppActivityManager.getInstance().remove(this);
 
+		mEventBus.unregister(this);
 		LogUtils.d(getClass().getSimpleName() + "---->" + "onDestroy");
 	}
 
@@ -180,11 +185,6 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 	}
 
 	/**
-	 * 当前显示的fragment
-	 */
-	private Fragment mCurrentFragment = null;
-	
-	/**
 	 * 改变根节点的fragment，被替换的fragment将触发它的onPause方法，
 	 * 目标fragment如果已经在之前加入到fragment管理器中进行管理
 	 * ，则目标fragment只会触发onResume方法，不会重新走一遍生命周期.
@@ -248,7 +248,67 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 		InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
 		imm.hideSoftInputFromWindow(windowToken, 0);
 	}
+
+	public DialogUtils getDialogUtils() {
+		return mDialogUtils;
+	}
 	
+	/**
+	 * EventBus事件处理
+	 * @param event
+	 */
+	public void onEventMainThread(HttpEvent event){
+		
+		if (event == null) {
+			LogUtils.e("event is null");
+			return;
+		}
+		
+		LogUtils.i("event cmdId:" + Integer.toHexString(event.getCmdId()));
+		
+		int requestStatus = event.getStatus();
+		switch (requestStatus) {
+		case HttpEvent.STATUS_CONNECTING:
+			onConnecting(event);
+			break;
+		case HttpEvent.STATUS_DATA_READING:
+			onDataReading(event);
+			break;
+		case HttpEvent.STATUS_TASK_CANCEL:
+			onTaskCancel(event);
+			break;
+		case HttpEvent.STATUS_SUC:
+			onSuccess(event);
+			break;
+		case HttpEvent.STATUS_ERROR:
+			onError(event);
+			break;
+
+		default:
+			LogUtils.e("unknow status:" + requestStatus + "cmdId:" + event.getCmdId());
+			break;
+		}
+	}
+	
+	private void onConnecting(HttpEvent event) {
+		
+	}
+
+	private void onDataReading(HttpEvent event) {
+		
+	}
+
+	private void onTaskCancel(HttpEvent event) {
+		
+	}
+
+	private void onSuccess(HttpEvent event) {
+		
+	}
+
+	private void onError(HttpEvent event) {
+		
+	}
 
 	/**
 	 * 设置内容视图
@@ -259,10 +319,10 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 	 * 初始化数据
 	 */
 	protected abstract void initializeData();
-	
 
 	/**
 	 * 初始化其它view
 	 */
 	protected abstract void initializeViews();
+	
 }

@@ -1,8 +1,24 @@
 package com.owl.baselib.app.event;
 
 import org.apache.http.Header;
-
+/**
+ * HTTP回调事件数据结构
+ * @author Administrator
+ *
+ * @param <T>
+ */
 public class HttpEvent<T> {
+	public static final int STATUS_CONNECTING = 1;
+	public static final int STATUS_DATA_READING = STATUS_CONNECTING + 1;
+	public static final int STATUS_TASK_CANCEL = STATUS_DATA_READING + 1;
+	public static final int STATUS_SUC = STATUS_TASK_CANCEL + 1;
+	public static final int STATUS_ERROR = STATUS_SUC + 1;
+	
+	/**
+	 * http请求结果状态
+	 */
+	private int status;
+	
 	private String url;
 	private int cmdId;
 
@@ -77,6 +93,14 @@ public class HttpEvent<T> {
 
 	public void setCurLen(long curLen) {
 		this.curLen = curLen;
+	}
+
+	public int getStatus() {
+		return status;
+	}
+
+	public void setStatus(int status) {
+		this.status = status;
 	}
 
 }

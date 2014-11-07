@@ -12,6 +12,7 @@ public abstract class DownloadRequestHelper extends CommonRequestHelper {
 	@Override
 	public void onConnecting(int cmdId) {
 		HttpEvent event = new HttpEvent();
+		event.setStatus(HttpEvent.STATUS_CONNECTING);
 		event.setCmdId(cmdId);
 		mEventBus.postEvent(event);
 	}
@@ -19,6 +20,7 @@ public abstract class DownloadRequestHelper extends CommonRequestHelper {
 	@Override
 	public void onDataReading(int cmdId, long total, long curLen) {
 		HttpEvent event = new HttpEvent();
+		event.setStatus(HttpEvent.STATUS_DATA_READING);
 		event.setCmdId(cmdId);
 		event.setTotal(total);
 		event.setCurLen(curLen);
