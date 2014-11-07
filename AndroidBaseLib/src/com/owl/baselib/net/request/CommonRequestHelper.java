@@ -14,7 +14,7 @@ import de.greenrobot.event.EventBus;
  */
 public abstract class CommonRequestHelper extends BaseRequestHelper {
 
-	EventBusWrapper mEventBus = EventBusWrapper.getInstance();
+	protected EventBusWrapper mEventBus = EventBusWrapper.getInstance();
 	
 	@Override
 	public void onConnecting(int cmdId) {
