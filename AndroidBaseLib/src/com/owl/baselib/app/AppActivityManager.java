@@ -8,9 +8,8 @@ import com.owl.baselib.utils.log.LogUtils;
 
 /**
  * 应用程序Activity管理类：用于Activity管理和应用程序退出
- * 
- * @author hugo 2014年9月14日
- *
+ * @author owl
+ * 2014年11月10日
  */
 public class AppActivityManager {
 	private static Stack<BaseFragmentActivity> sActivityStack = new Stack<BaseFragmentActivity>();

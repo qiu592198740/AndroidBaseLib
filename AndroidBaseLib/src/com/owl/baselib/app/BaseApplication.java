@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 
 public class BaseApplication extends Application {
+	
+	/////////////////////////////////////////////TODO 暂时未用上
 	public static final String APP_START_ACTION = "app_start_action";
 	public static final String APP_FINISH_ACTION = "app_finish_action";
 
@@ -14,7 +16,8 @@ public class BaseApplication extends Application {
 	public static final int APP_STATE_DESTROY = 3;
 
 	private static int appState;
-
+	/////////////////////////////////////////////
+	
 	private static Context sAppContext;
 
 //	private static RequesterProxy mRequestProxy;
@@ -26,6 +29,7 @@ public class BaseApplication extends Application {
 		
 		setAppState(APP_STATE_UNKOWN);
 
+		//初始化图片加载器
 		ImageLoaderWrapper.getInstance().initializeImageLoader(sAppContext);
 	}
 
