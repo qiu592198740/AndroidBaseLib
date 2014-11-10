@@ -28,7 +28,7 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 	/**
 	 * 当前显示的fragment
 	 */
-	private Fragment mCurrentFragment = null;
+	private BaseFragment mCurrentFragment = null;
 	
 	protected DialogUtils mDialogUtils;
 	
@@ -204,14 +204,14 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 			FragmentTransaction ft = getSupportFragmentManager()
 					.beginTransaction();
 
-			Fragment target = null;
+			BaseFragment target = null;
 			if (mCurrentFragment == null) {
-				target = targetFragment.newInstance();
+				target = (BaseFragment) targetFragment.newInstance();
 				ft.add(targetResId, target, targetFragment.getName());
 			} else {
 
 				FragmentManager fm = getSupportFragmentManager();
-				target = fm.findFragmentByTag(targetFragment.getName());
+				target = (BaseFragment) fm.findFragmentByTag(targetFragment.getName());
 
 				if (mCurrentFragment.getClass() != targetFragment) {
 
@@ -219,7 +219,7 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 					mCurrentFragment.onPause();
 
 					if (target == null) {
-						target = targetFragment.newInstance();
+						target = (BaseFragment) targetFragment.newInstance();
 						ft.add(targetResId, target, targetFragment.getName());
 					} else {
 						target.onResume();
@@ -257,16 +257,18 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 	 * EventBus事件处理
 	 * @param event
 	 */
-	public void onEventMainThread(HttpEvent event){
-		
+	public void onEvent(HttpEvent event){
+		LogUtils.d("Thread name:" + Thread.currentThread().getName());
 		if (event == null) {
 			LogUtils.e("event is null");
 			return;
 		}
 		
+		LogUtils.i("event url:" + event.getUrl());
 		LogUtils.i("event cmdId:" + Integer.toHexString(event.getCmdId()));
 		
 		int requestStatus = event.getStatus();
+		LogUtils.i("event requestStatus:" + requestStatus);
 		switch (requestStatus) {
 		case HttpEvent.STATUS_CONNECTING:
 			onConnecting(event);
@@ -288,27 +290,23 @@ public abstract class BaseFragmentActivity extends FragmentActivity {
 			LogUtils.e("unknow status:" + requestStatus + "cmdId:" + event.getCmdId());
 			break;
 		}
+		
+		//如果嵌套fragment,调用fragment处理
+		if (mCurrentFragment != null) {
+			mCurrentFragment.onFragmentHttpEvent(event);
+		}
 	}
 	
-	private void onConnecting(HttpEvent event) {
-		
-	}
+	//处理网络事件
+	protected abstract void onConnecting(HttpEvent event);
 
-	private void onDataReading(HttpEvent event) {
-		
-	}
+	protected abstract void onDataReading(HttpEvent event);
 
-	private void onTaskCancel(HttpEvent event) {
-		
-	}
+	protected abstract void onTaskCancel(HttpEvent event);
 
-	private void onSuccess(HttpEvent event) {
-		
-	}
+	protected abstract void onSuccess(HttpEvent event);
 
-	private void onError(HttpEvent event) {
-		
-	}
+	protected abstract void onError(HttpEvent event);
 
 	/**
 	 * 设置内容视图
